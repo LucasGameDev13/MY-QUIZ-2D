@@ -52,11 +52,16 @@ public class Quiz : MonoBehaviour
 
     void Update()
     {
+        //Updating the timer image according with the time fraction
         timerImage.fillAmount = timerScript._fillFraction;
+
+        //Checking out the conditions to load the next question
         if (timerScript._loadNextQuestion)
         {
+            //Checking if the game has already achieved the total of questions
             if (progressBar.value == progressBar.maxValue)
             {
+                //If yes, get out.
                 isCompleted = true;
                 return;
             }
@@ -66,6 +71,8 @@ public class Quiz : MonoBehaviour
             GetNextQuestion();
             timerScript._loadNextQuestion = false;
         }
+        //Checking out a new condition, where if the time to answer the question has gone and the player didn't answer
+        //So show up the right answer
         else if(!hasAnsweredEarly && !timerScript._isAnsweringQuestion)
         {
             DisplayAnswer(-1);
@@ -73,8 +80,10 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    //Function to call the next question
     private void GetNextQuestion()
     {
+        //It works only if I have questions to be asked
         if (questionsSO.Count > 0)
         {
             SetButtonState(true);
@@ -86,17 +95,20 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    //Function to make the questions random
     private void GetRandomQuestion()
     {
         int index = Random.Range(0, questionsSO.Count);
         currentQuestionSO = questionsSO[index];
 
+        //As soon as the question to be released .. take it off from the questions list
         if (questionsSO.Contains(currentQuestionSO))
         {
             questionsSO.Remove(currentQuestionSO);
         }
     }
 
+    //Method to show up the question ans the answers will be selected on the game
     private void DisplayQuestion()
     {
         questionText.text = currentQuestionSO.GetQuestion();
@@ -108,6 +120,7 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    //Method to be called on the game buttons
     public void OnAnswerSelected(int index)
     {
         hasAnsweredEarly = true;
@@ -115,14 +128,14 @@ public class Quiz : MonoBehaviour
         SetButtonState(false);
         timerScript.CancelTimer();
         scoreText.text = "Score: " + scoreKeeper.CalculeteScore() + "%";
-
-
     }
 
+    //Method to check out the right and the wrong answers
     private void DisplayAnswer(int index)
     {
         Image buttonImage;
 
+        //If right, display the correct message and change the button sprite
         if (index == currentQuestionSO.GetCorrectAnswerIndex())
         {
             questionText.text = "Correct!!!";
@@ -130,7 +143,7 @@ public class Quiz : MonoBehaviour
             buttonImage.sprite = correctAnswerSprite;
             scoreKeeper.IncrementCorrectAnswers();
         }
-        else
+        else // If wrong, display the wrong message and change the button sprite, indicating the right answer
         {
             correctAnswerIndex = currentQuestionSO.GetCorrectAnswerIndex();
             string correctAnswer = currentQuestionSO.GetAnswer(correctAnswerIndex);
@@ -140,6 +153,7 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    //Method to call off the buttons' interactivity
     private void SetButtonState(bool state)
     {
         for(int i = 0; i < answersButtons.Length; i++)
@@ -149,6 +163,7 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    //Method to turn back the buttons' sprite to normal
     private void SetDefaultButtonSprites()
     {
         Image buttonImage;
